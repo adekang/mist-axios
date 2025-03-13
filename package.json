@@ -1,15 +1,15 @@
 {
-  "name": "ts-lib",
+  "name": "mist-axios",
   "type": "module",
   "version": "0.0.4",
   "license": "MIT",
   "exports": {
     "types": "./index.d.ts",
-    "import": "./dist/ts-lib.mjs",
-    "require": "./dist/ts-lib.umd.js"
+    "import": "./dist/mist-axios.mjs",
+    "require": "./dist/mist-axios.umd.js"
   },
-  "main": "./dist/ts-lib.umd.js",
-  "module": "./dist/ts-lib.mjs",
+  "main": "./dist/mist-axios.umd.js",
+  "module": "./dist/mist-axios.mjs",
   "types": "./index.d.ts",
   "files": [
     "README.md",
