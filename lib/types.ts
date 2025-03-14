@@ -37,3 +37,45 @@ export interface Axios {
 }
 
 export interface AxiosInstance extends Axios {}
+
+export type AxiosErrorCode =
+  | 'ERR_BAD_OPTION_VALUE'
+  | 'ERR_BAD_OPTION'
+  | 'ECONNABORTED'
+  | 'ETIMEDOUT'
+  | 'ERR_NETWORK'
+  | 'ERR_FR_TOO_MANY_REDIRECTS'
+  | 'ERR_DEPRECATED'
+  | 'ERR_BAD_RESPONSE'
+  | 'ERR_BAD_REQUEST'
+  | 'ERR_CANCELED'
+  | 'ERR_NOT_SUPPORT'
+  | 'ERR_INVALID_URL';
+
+export interface AxiosError extends Error {
+  /**
+   * 判断是否是 AxiosError 类型
+   * @type {boolean}
+   */
+  isAxiosError: boolean
+  /**
+   * 请求配置
+   * @type {AxiosRequestConfig}
+   */
+  config: AxiosRequestConfig
+  /**
+   * 错误码
+   * @type {AxiosErrorCode}
+   */
+  code?: AxiosErrorCode | null
+  /**
+   * 请求对象
+   * @type {XMLHttpRequest}
+   */
+  request?: XMLHttpRequest
+  /**
+   * 响应对象
+   * @type {AxiosResponse}
+   */
+  response?: AxiosResponse
+}

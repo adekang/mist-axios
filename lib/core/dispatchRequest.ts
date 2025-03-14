@@ -1,4 +1,5 @@
-import type { AxiosPromise, AxiosRequestConfig, AxiosResponse } from './types';
+import type { AxiosPromise, AxiosRequestConfig, AxiosResponse } from '../types';
+import { createError, ErrorCodes } from './AxiosError';
 
 export default function dispatchRequest(config: AxiosRequestConfig): Promise<any> {
   return xhr(config);
@@ -33,7 +34,7 @@ function xhr(config: AxiosRequestConfig): AxiosPromise {
     };
 
     request.onerror = function handleError() {
-      reject(new Error('Network Error'));
+      reject(createError('Network Error', null, config, request));
     };
 
     request.send(data as any);
@@ -56,6 +57,8 @@ function settle(
     resolve(response);
   }
   else {
-    reject(new Error(`Request failed with status code ${response.status}`));
+    reject(createError(`Request failed with status code ${response.status}`, [ErrorCodes.ERR_BAD_REQUEST.value, ErrorCodes.ERR_BAD_RESPONSE.value][
+      Math.floor(response.status / 100) - 4
+    ], response.config, response.request, response));
   }
 }
