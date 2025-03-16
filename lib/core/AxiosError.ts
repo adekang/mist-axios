@@ -29,7 +29,6 @@ export default class AxiosError extends Error implements IAxiosError {
     Object.setPrototypeOf(this, AxiosError.prototype);
   }
 
-  // eslint-disable-next-line ts/explicit-function-return-type
   toJSON() {
     return {
       message: this.message,

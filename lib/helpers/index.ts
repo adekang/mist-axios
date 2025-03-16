@@ -5,7 +5,6 @@ import { isArray, isObject, isPlainObject, isUndefined } from './is';
  * @param obj
  * @returns JSON 对象
  */
-// eslint-disable-next-line ts/explicit-function-return-type
 export function toJSONObject<T = object>(obj: T) {
   const stack = Array.from({ length: 10 });
 

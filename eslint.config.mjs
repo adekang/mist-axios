@@ -47,5 +47,6 @@ export default Linter({
     'style/linebreak-style': [2, 'unix'],
     // 允许无限禁用规则，设置为 0 表示关闭此规则
     'eslint-comments/no-unlimited-disable': 0,
+    'ts/explicit-function-return-type': 0,
   }
 });
