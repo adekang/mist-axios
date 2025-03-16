@@ -43,6 +43,11 @@ export {
   getPrototypeOf
 };
 
+/**
+ *  深度合并对象 将多个对象合并到一个对象中 返回合并后的对象 优先级：从后往前
+ * @param args 对象
+ * @returns 合并后的对象
+ */
 export function deepMerge(...args: any[]): any {
   const result = Object.create(null);
 

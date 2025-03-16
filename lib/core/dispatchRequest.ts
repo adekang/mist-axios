@@ -1,10 +1,35 @@
 import type { AxiosPromise, AxiosRequestConfig, AxiosResponse } from '../types';
+import { flattenHeaders } from '@/helpers/headers';
+import { buildURL, combineURL, isAbsoluteURL } from '@/helpers/url';
 import { createError, ErrorCodes } from './AxiosError';
 
 export default function dispatchRequest(config: AxiosRequestConfig): Promise<any> {
+  processConfig(config);
   return xhr(config);
 }
+function processConfig(config: AxiosRequestConfig): void {
+  config.url = transformURL(config);
+  config.headers = flattenHeaders(config.headers, config.method!);
+}
 
+/**
+ *  处理请URL 参数拼接 URL合并 等
+ * @param config
+ * @returns
+ */
+export function transformURL(config: AxiosRequestConfig): string {
+  const { url, params, baseUrl, paramsSerializer } = config;
+
+  const fullPath = baseUrl && !isAbsoluteURL(url!) ? combineURL(baseUrl, url) : url;
+
+  return buildURL(fullPath!, params, paramsSerializer);
+}
+
+/**
+ *  处理请求数据
+ * @param {AxiosRequestConfig} config  请求配置
+ * @returns {AxiosPromise} 处理后的请求数据
+ */
 function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
     const { url, method = 'get', data = null, headers = {} } = config;

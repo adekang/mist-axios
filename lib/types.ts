@@ -7,17 +7,20 @@ export type Method =
   | 'put' | 'PUT'
   | 'patch' | 'PATCH';
 
-export type Paramas = Record<string, any>;
+export type Params = Record<string, any>;
 export type IHeaders = Record<string, any>;
 
 export interface AxiosRequestConfig {
   url?: string
-  method?: string
+  method?: Method
   data?: unknown
   headers?: IHeaders | null
-  params?: Paramas
+  params?: Params
+  baseUrl?: string
 
   validataStatus?: (status: number) => boolean
+  // 参数序列化
+  paramsSerializer?: (params: Params) => string
 }
 
 export interface AxiosResponse<T = any> {

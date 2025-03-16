@@ -1,5 +1,7 @@
 import { getPrototypeOf, kindOf } from '.';
 
+const objToString = Object.prototype.toString;
+
 // eslint-disable-next-line valid-typeof
 const typeOfTest = (type: string) => (thing: unknown): boolean => typeof thing === type;
 
@@ -43,4 +45,13 @@ export function isPlainObject(val: unknown): boolean {
     && !(Symbol.toStringTag in (val as object))
     && !(Symbol.iterator in (val as object))
   );
+}
+
+/**
+ *  判断是否是一个日期对象
+ * @param val 任意值
+ * @returns boolean
+ */
+export function isDate(val: unknown): val is Date {
+  return objToString.call(val) === '[object Date]';
 }

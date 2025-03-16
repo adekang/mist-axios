@@ -1,15 +1,14 @@
-import DummyClass from '@/index';
 import { describe, expect, it } from 'vitest';
 
-/**
- * Dummy test
- */
-describe('dummy test', () => {
-  it('works if true is truthy', () => {
-    expect(true).toBeTruthy();
-  });
+export function sum(a, b) {
+  return a + b;
+}
 
-  it('dummyClass is instantiable', () => {
-    expect(new DummyClass()).toBeInstanceOf(DummyClass);
+/**
+ * add test
+ */
+describe('add test', () => {
+  it('expect(sum(1, 2)).toBe(3)', () => {
+    expect(sum(1, 2)).toBe(3);
   });
 });
