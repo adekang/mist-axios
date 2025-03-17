@@ -15,7 +15,7 @@ function processConfig(config: AxiosRequestConfig): void {
 /**
  *  处理请URL 参数拼接 URL合并 等
  * @param config
- * @returns
+ * @returns {string} 处理后的URL
  */
 export function transformURL(config: AxiosRequestConfig): string {
   const { url, params, baseUrl, paramsSerializer } = config;
@@ -32,7 +32,7 @@ export function transformURL(config: AxiosRequestConfig): string {
  */
 function xhr(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
-    const { url, method = 'get', data = null, headers = {} } = config;
+    const { url, method = 'get', data = null, headers = {}, timeout, responseType } = config;
 
     const request = new XMLHttpRequest();
     request.open(method.toUpperCase(), url!, true);
@@ -61,6 +61,18 @@ function xhr(config: AxiosRequestConfig): AxiosPromise {
     request.onerror = function handleError() {
       reject(createError('Network Error', null, config, request));
     };
+
+    request.ontimeout = function handleTimeout() {
+      reject(createError(`Timeout of ${timeout} ms exceeded`, ErrorCodes.ERR_TIMEOUT.value, config, request));
+    };
+
+    if (responseType) {
+      request.responseType = responseType;
+    }
+
+    if (timeout) {
+      request.timeout = timeout;
+    }
 
     request.send(data as any);
   });

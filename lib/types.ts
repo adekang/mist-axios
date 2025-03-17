@@ -17,6 +17,8 @@ export interface AxiosRequestConfig {
   headers?: IHeaders | null
   params?: Params
   baseUrl?: string
+  timeout?: number
+  responseType?: XMLHttpRequestResponseType
 
   validataStatus?: (status: number) => boolean
   // 参数序列化
