@@ -20,6 +20,8 @@ export interface AxiosRequestConfig {
   timeout?: number
   responseType?: XMLHttpRequestResponseType
 
+  adapter?: 'xhr' | 'fetch' | 'http' | ((config: AxiosRequestConfig) => AxiosPromise)
+
   validataStatus?: (status: number) => boolean
   // 参数序列化
   paramsSerializer?: (params: Params) => string

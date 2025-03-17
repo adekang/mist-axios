@@ -1,7 +1,8 @@
-import { AxiosRequestConfig } from "./types";
-
+import type { AxiosRequestConfig } from './types';
 
 export default {
+  timeout: 0,
+  adapter: 'xhr',
   method: 'get',
   headers: {
     common: {
@@ -12,4 +13,4 @@ export default {
     return status >= 200 && status < 300;
   }
 
-} as AxiosRequestConfig
+} as AxiosRequestConfig;

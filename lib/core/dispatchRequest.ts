@@ -1,12 +1,24 @@
-import type { AxiosPromise, AxiosRequestConfig, AxiosResponse } from '../types';
+import type { AxiosRequestConfig } from '../types';
+import adapters from '@/adapters';
+import defaults from '@/defaults';
 import { flattenHeaders } from '@/helpers/headers';
 import { buildURL, combineURL, isAbsoluteURL } from '@/helpers/url';
-import { createError, ErrorCodes } from './AxiosError';
 
+/**
+ *  发送请求
+ * @param config 请求配置
+ * @returns {Promise<any>} 返回一个Promise
+ */
 export default function dispatchRequest(config: AxiosRequestConfig): Promise<any> {
   processConfig(config);
-  return xhr(config);
+  const adapter = adapters.getAdapter(config?.adapter || defaults.adapter);
+  return adapter(config);
 }
+
+/**
+ *  处理请求配置
+ * @param config 请求配置
+ */
 function processConfig(config: AxiosRequestConfig): void {
   config.url = transformURL(config);
   config.headers = flattenHeaders(config.headers, config.method!);
@@ -25,77 +37,3 @@ export function transformURL(config: AxiosRequestConfig): string {
   return buildURL(fullPath!, params, paramsSerializer);
 }
 
-/**
- *  处理请求数据
- * @param {AxiosRequestConfig} config  请求配置
- * @returns {AxiosPromise} 处理后的请求数据
- */
-function xhr(config: AxiosRequestConfig): AxiosPromise {
-  return new Promise((resolve, reject) => {
-    const { url, method = 'get', data = null, headers = {}, timeout, responseType } = config;
-
-    const request = new XMLHttpRequest();
-    request.open(method.toUpperCase(), url!, true);
-
-    request.onreadystatechange = function () {
-      if (request.readyState !== 4) {
-        return;
-      }
-
-      if (request.status === 0) {
-        return;
-      }
-
-      const response: AxiosResponse = {
-        data: request.response,
-        status: request.status,
-        statusText: request.statusText,
-        headers: headers ?? {},
-        config,
-        request
-      };
-
-      settle(resolve, reject, response);
-    };
-
-    request.onerror = function handleError() {
-      reject(createError('Network Error', null, config, request));
-    };
-
-    request.ontimeout = function handleTimeout() {
-      reject(createError(`Timeout of ${timeout} ms exceeded`, ErrorCodes.ERR_TIMEOUT.value, config, request));
-    };
-
-    if (responseType) {
-      request.responseType = responseType;
-    }
-
-    if (timeout) {
-      request.timeout = timeout;
-    }
-
-    request.send(data as any);
-  });
-}
-
-/**
- *  处理请求返回的结果
- * @param resolve
- * @param reject
- * @param response
- */
-function settle(
-  resolve: (value: AxiosResponse) => void,
-  reject: (reason: any) => void,
-  response: AxiosResponse
-): void {
-  const validataStatus = response.config.validataStatus;
-  if (!response.status || !validataStatus || validataStatus(response.status)) {
-    resolve(response);
-  }
-  else {
-    reject(createError(`Request failed with status code ${response.status}`, [ErrorCodes.ERR_BAD_REQUEST.value, ErrorCodes.ERR_BAD_RESPONSE.value][
-      Math.floor(response.status / 100) - 4
-    ], response.config, response.request, response));
-  }
-}
