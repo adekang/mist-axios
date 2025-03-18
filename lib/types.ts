@@ -41,6 +41,10 @@ export interface AxiosPromise<T = any> extends Promise<AxiosResponse<T>> {}
 export interface Axios {
   defaults: AxiosRequestConfig
   request: <T = any>(config: AxiosRequestConfig) => AxiosPromise<T>
+  interceptors: {
+    request: AxiosInterceptorManager<AxiosRequestConfig>
+    response: AxiosInterceptorManager<AxiosResponse>
+  }
 }
 
 export interface AxiosInstance extends Axios {
@@ -116,3 +120,28 @@ export interface AxiosError extends Error {
    */
   response?: AxiosResponse
 }
+
+export interface AxiosInterceptorManager<T> {
+  /**
+   * 添加拦截器
+   * @param resolved 成功回调
+   * @param rejected 失败回调
+   * @returns
+   */
+  use: (resolved: ResolvedFn<T>, rejected?: RejectedFn) => number
+  /**
+   *  删除拦截器
+   * @param id 拦截器 id
+   * @returns
+   */
+  eject: (id: number) => void
+}
+
+export interface ResolvedFn<T> {
+  (val: T): T | Promise<T>
+}
+
+export interface RejectedFn {
+  (error: any): any
+}
+
