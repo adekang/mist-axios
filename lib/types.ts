@@ -43,13 +43,9 @@ export interface Axios {
   request: <T = any>(config: AxiosRequestConfig) => AxiosPromise<T>
 }
 
-export interface AxiosStatic extends AxiosInstance {
-
-  create: (config?: AxiosRequestConfig) => AxiosInstance
-  all: <T>(promises: Array<T | Promise<T>>) => Promise<T[]>
-  spread: <T, R>(callback: (...args: T[]) => R) => (arr: T[]) => R
-
-  Axios: AxiosClassStatic
+export interface AxiosInstance extends Axios {
+  <T = any>(config: AxiosRequestConfig): AxiosPromise<T>
+  <T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
 
   get: <T = any>(url: string, config?: AxiosRequestConfig) => AxiosPromise<T>
   delete: <T = any>(url: string, config?: AxiosRequestConfig) => AxiosPromise<T>
@@ -65,13 +61,18 @@ export interface AxiosStatic extends AxiosInstance {
   patchForm: <T = any>(url: string, data?: unknown, config?: AxiosRequestConfig) => AxiosPromise<T>
 }
 
-export interface AxiosClassStatic {
-  new (config: AxiosRequestConfig): Axios
+export interface AxiosStatic extends AxiosInstance {
+
+  create: (config?: AxiosRequestConfig) => AxiosInstance
+  all: <T>(promises: Array<T | Promise<T>>) => Promise<T[]>
+  spread: <T, R>(callback: (...args: T[]) => R) => (arr: T[]) => R
+
+  Axios: AxiosClassStatic
+
 }
 
-export interface AxiosInstance extends Axios {
-  <T = any>(config: AxiosRequestConfig): AxiosPromise<T>
-  <T = any>(url: string, config?: AxiosRequestConfig): AxiosPromise<T>
+export interface AxiosClassStatic {
+  new (config: AxiosRequestConfig): Axios
 }
 
 export type AxiosErrorCode =

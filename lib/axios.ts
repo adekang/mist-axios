@@ -16,7 +16,7 @@ function createInstance(config: AxiosRequestConfig): AxiosStatic {
   return instance as AxiosStatic;
 }
 
-const axios = createInstance(defaults);
+const axios = createInstance(defaults) as AxiosStatic;
 
 // 使用方法 axios.create()
 axios.create = function create(config): AxiosStatic {
