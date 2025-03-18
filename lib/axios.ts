@@ -6,6 +6,8 @@ import { extend } from './helpers';
 
 function createInstance(config: AxiosRequestConfig): AxiosStatic {
   const context = new Axios(config);
+
+  // 使用方法 axios.request()
   const instance = Axios.prototype.request.bind(context);
 
   extend(instance, Axios.prototype, context);
@@ -16,14 +18,17 @@ function createInstance(config: AxiosRequestConfig): AxiosStatic {
 
 const axios = createInstance(defaults);
 
+// 使用方法 axios.create()
 axios.create = function create(config): AxiosStatic {
   return createInstance(mergeConfig(defaults, config));
 };
 
+// 使用方法 axios.all()
 axios.all = function all(promises) {
   return Promise.all(promises);
 };
 
+// 使用方法 axios.spread()
 axios.spread = function spread(callback) {
   return function wrap(arr) {
     // eslint-disable-next-line prefer-spread
