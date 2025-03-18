@@ -72,3 +72,25 @@ export function deepMerge(...args: any[]): any {
 
   return result;
 }
+
+// eslint-disable-next-line ts/no-unsafe-function-type
+function _bind(fn: Function, thisArg: unknown) {
+  return function wrap() {
+    // eslint-disable-next-line prefer-rest-params
+    return fn.apply(thisArg, arguments);
+  };
+}
+
+export function extend<T, U>(to: T, from: U, thisArg?: unknown): T & U {
+  for (const key in from) {
+    if (thisArg && typeof from[key] === 'function') {
+      // eslint-disable-next-line ts/no-unsafe-function-type
+      ;(to as T & U)[key] = _bind(from[key] as Function, thisArg) as any;
+    }
+    else {
+      ;(to as T & U)[key] = from[key] as any;
+    }
+  }
+
+  return to as T & U;
+}
