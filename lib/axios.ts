@@ -1,10 +1,10 @@
-import type { AxiosRequestConfig, AxiosStatic } from './types';
+import type { AxiosInstance, AxiosRequestConfig, AxiosStatic } from './types';
 import Axios from './core/Axios';
 import mergeConfig from './core/mergeConfig';
 import defaults from './defaults';
 import { extend } from './helpers';
 
-function createInstance(config: AxiosRequestConfig): AxiosStatic {
+function createInstance(config: AxiosRequestConfig) {
   const context = new Axios(config);
 
   // 使用方法 axios.request()
@@ -13,13 +13,13 @@ function createInstance(config: AxiosRequestConfig): AxiosStatic {
   extend(instance, Axios.prototype, context);
   extend(instance, context);
 
-  return instance as AxiosStatic;
+  return instance as AxiosInstance;
 }
 
 const axios = createInstance(defaults) as AxiosStatic;
 
 // 使用方法 axios.create()
-axios.create = function create(config): AxiosStatic {
+axios.create = function create(config) {
   return createInstance(mergeConfig(defaults, config));
 };
 
