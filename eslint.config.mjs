@@ -4,6 +4,7 @@ export default Linter({
   type: 'lib',
   vue: false,
   ignores: ['**/dist/**', '**/node_modules/**', '**/coverage/**', '**/.vitepress/cache/**'],
+  markdown: false,
   rules: {
   // 圈复杂度最大为 15
     'complexity': [2, { max: 15 }],

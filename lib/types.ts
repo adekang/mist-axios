@@ -22,6 +22,8 @@ export interface AxiosRequestConfig {
 
   adapter?: 'xhr' | 'fetch' | 'http' | ((config: AxiosRequestConfig) => AxiosPromise)
 
+  cancelToken?: CancelToken
+
   validataStatus?: (status: number) => boolean
   // 参数序列化
   paramsSerializer?: (params: Params) => string
@@ -71,7 +73,10 @@ export interface AxiosStatic extends AxiosInstance {
   all: <T>(promises: Array<T | Promise<T>>) => Promise<T[]>
   spread: <T, R>(callback: (...args: T[]) => R) => (arr: T[]) => R
 
+  CancelToken?: CancelTokenStatic
+
   Axios: AxiosClassStatic
+  // Axios: typeof AxiosClass
 
 }
 
@@ -143,5 +148,32 @@ export interface ResolvedFn<T> {
 
 export interface RejectedFn {
   (error: any): any
+}
+
+export interface CancelToken {
+  promise: Promise<string>
+  reason?: string
+
+  throwIfRequested: () => void
+
+}
+
+export interface CancelTokenStatic {
+  new (executer: CancelExecutor): CancelToken
+  source: () => CancelTokenSource
+
+}
+
+export interface Canceler {
+  (message?: string): void
+}
+
+export interface CancelExecutor {
+  (cancel: Canceler): void
+}
+
+export interface CancelTokenSource {
+  token: CancelToken
+  cancel: Canceler
 }
 

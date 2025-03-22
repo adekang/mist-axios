@@ -11,7 +11,7 @@ const isXhrAdapterSupported = typeof XMLHttpRequest !== 'undefined';
  */
 export default isXhrAdapterSupported && function xhrAdapter(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
-    const { url, method = 'get', data = null, headers = {}, timeout, responseType } = config;
+    const { url, method = 'get', data = null, headers = {}, timeout, responseType, cancelToken } = config;
 
     const request = new XMLHttpRequest();
     request.open(method.toUpperCase(), url!, true);
@@ -51,6 +51,13 @@ export default isXhrAdapterSupported && function xhrAdapter(config: AxiosRequest
 
     if (timeout) {
       request.timeout = timeout;
+    }
+
+    if (cancelToken) {
+      cancelToken.promise.then(reason => {
+        request.abort();
+        reject(reason);
+      });
     }
 
     request.send(data as any);

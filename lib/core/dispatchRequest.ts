@@ -10,6 +10,7 @@ import { buildURL, combineURL, isAbsoluteURL } from '@/helpers/url';
  * @returns {Promise<any>} 返回一个Promise
  */
 export default function dispatchRequest(config: AxiosRequestConfig): Promise<any> {
+  throwIfCancellationRequested(config);
   processConfig(config);
   const adapter = adapters.getAdapter(config?.adapter || defaults.adapter);
   return adapter(config);
@@ -37,3 +38,8 @@ export function transformURL(config: AxiosRequestConfig): string {
   return buildURL(fullPath!, params, paramsSerializer);
 }
 
+function throwIfCancellationRequested(config: AxiosRequestConfig): void {
+  if (config.cancelToken) {
+    config.cancelToken.throwIfRequested();
+  }
+}
