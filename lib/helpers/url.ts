@@ -1,6 +1,10 @@
 import type { Params } from '@/types';
-import { ifError } from 'node:assert';
 import { isArray, isDate, isNil, isPlainObject } from './is';
+
+interface URLOrigin {
+  protocol: string
+  host: string
+}
 
 /**
  *  判断是否是绝对URL
@@ -107,3 +111,27 @@ export function buildURL(
 export function isURLSearchParams(val: any): val is URLSearchParams {
   return typeof val !== 'undefined' && val instanceof URLSearchParams;
 }
+
+const urlParsingNode = document.createElement('a');
+const currentOrigin = resolveURL(window.location.href);
+function resolveURL(url: string): URLOrigin {
+  urlParsingNode.setAttribute('href', url);
+  const { protocol, host } = urlParsingNode;
+  return {
+    protocol,
+    host
+  };
+}
+
+/**
+ * 判断是否是同源URL
+ * @param requestURL 请求URL
+ * @returns {boolean} 是否是同源URL
+ */
+export function isURLSameOrigin(requestURL: string): boolean {
+  const parsedOrigin = resolveURL(requestURL);
+  return (
+    parsedOrigin.protocol === currentOrigin.protocol && parsedOrigin.host === currentOrigin.host
+  );
+}
+

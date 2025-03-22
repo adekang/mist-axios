@@ -55,3 +55,21 @@ export function isPlainObject(val: unknown): boolean {
 export function isDate(val: unknown): val is Date {
   return objToString.call(val) === '[object Date]';
 }
+
+/**
+ * 判断是否是一个 FormData 对象
+ * @param val 任意值
+ * @returns boolean
+ */
+export function isFormData(val: unknown): val is FormData {
+  return typeof val !== 'undefined' && val instanceof FormData;
+}
+
+/**
+ * 判断是否是一个 URLSearchParams 对象
+ * @param val 任意值
+ * @returns boolean
+ */
+export function isURLSearchParams(val: unknown): val is URLSearchParams {
+  return typeof val !== 'undefined' && val instanceof URLSearchParams;
+}
