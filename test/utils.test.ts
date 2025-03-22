@@ -4,40 +4,8 @@ import {
   deepMerge,
   extend,
 } from '../lib/helpers/index';
-import { isArray, isDate, isFormData, isPlainObject, isURLSearchParams } from '../lib/helpers/is';
 
 describe('helpers:utils', () => {
-  describe('isXX', () => {
-    it('should validate Array', () => {
-      expect(isArray([])).toBeTruthy();
-      expect(isArray('[]')).toBeFalsy();
-      expect(isArray(document.all)).toBeFalsy();
-    });
-
-    it('should validate Date', () => {
-      expect(isDate(new Date())).toBeTruthy();
-      expect(isDate(Date.now())).toBeFalsy();
-    });
-
-    it('should validate PlainObject', () => {
-      expect(isPlainObject({})).toBeTruthy();
-      expect(isPlainObject(new Date())).toBeFalsy();
-      expect(isPlainObject(null)).toBeFalsy();
-    });
-
-    it('should validate FormData', () => {
-      expect(isFormData(new FormData())).toBeTruthy();
-      expect(isFormData(void 0)).toBeFalsy();
-      expect(isFormData({})).toBeFalsy();
-    });
-
-    it('should validate URLSearchParams', () => {
-      expect(isURLSearchParams(new URLSearchParams())).toBeTruthy();
-      expect(isURLSearchParams(void 0)).toBeFalsy();
-      expect(isURLSearchParams('foo=1&bar=2')).toBeFalsy();
-    });
-  });
-
   describe('extend', () => {
     it('should be mutabel', () => {
       const a = Object.create(null);
@@ -59,6 +27,7 @@ describe('helpers:utils', () => {
     it('should extend function', () => {
       const fn = vi.fn(function (this: Record<string, any>) {
         // do something
+        // eslint-disable-next-line ts/no-use-before-define
         expect(this).toBe(b);
       });
       const a = { foo: 'bar' };

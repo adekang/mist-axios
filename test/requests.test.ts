@@ -14,6 +14,7 @@ describe('requests', () => {
   afterAll(() => server.close());
 
   // 每次测试后重置处理程序 `对测试隔离很重要`
+  // eslint-disable-next-line test/prefer-hooks-in-order
   afterEach(() => server.resetHandlers());
 
   it('should treat single string arg as url', () => {
