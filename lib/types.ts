@@ -72,11 +72,13 @@ export interface AxiosStatic extends AxiosInstance {
   create: (config?: AxiosRequestConfig) => AxiosInstance
   all: <T>(promises: Array<T | Promise<T>>) => Promise<T[]>
   spread: <T, R>(callback: (...args: T[]) => R) => (arr: T[]) => R
+  isCancel: (val: unknown) => val is Cancel
 
   CancelToken?: CancelTokenStatic
 
-  Axios: AxiosClassStatic
   // Axios: typeof AxiosClass
+  Axios: AxiosClassStatic
+  CancelError: CancelStatic
 
 }
 
