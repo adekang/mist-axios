@@ -151,8 +151,8 @@ export interface RejectedFn {
 }
 
 export interface CancelToken {
-  promise: Promise<string>
-  reason?: string
+  promise: Promise<Cancel>
+  reason?: Cancel
 
   throwIfRequested: () => void
 
@@ -165,7 +165,7 @@ export interface CancelTokenStatic {
 }
 
 export interface Canceler {
-  (message?: string): void
+  (message: string,config:AxiosRequestConfig,request:XMLHttpRequest): void
 }
 
 export interface CancelExecutor {
@@ -177,3 +177,10 @@ export interface CancelTokenSource {
   cancel: Canceler
 }
 
+export interface Cancel {
+  message?: string
+}
+
+export interface CancelStatic {
+  new (message: string, config: AxiosRequestConfig, request: XMLHttpRequest): Cancel
+}

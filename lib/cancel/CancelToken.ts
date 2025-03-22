@@ -1,13 +1,13 @@
-import type { Canceler, CancelExecutor, CancelTokenSource, CancelToken as ICancelToken } from '../types';
+import type { Cancel, Canceler, CancelExecutor, CancelTokenSource, CancelToken as ICancelToken } from '../types';
+import CancelError from './CancelError';
 
 interface ResolvePromise {
-  (reason?: string): void
-
+  (reason?: Cancel): void
 }
 
 export default class CancelToken implements ICancelToken {
-  promise: Promise<string>;
-  reason?: string;
+  promise: Promise<CancelError>;
+  reason?: CancelError;
   constructor(executer: CancelExecutor) {
     let resolvePromise: ResolvePromise;
 
@@ -15,19 +15,16 @@ export default class CancelToken implements ICancelToken {
       resolvePromise = resolve as ResolvePromise;
     });
 
-    executer(message => {
-      if (this.reason) {
-        return void 0;
-      }
-
-      this.reason = message;
-      resolvePromise(message);
+    executer((message,config,request) => {
+      if (this.reason) return;
+      this.reason = new CancelError(message, config, request);
+      resolvePromise(this.reason);
     });
   }
 
   throwIfRequested() {
     if (this.reason) {
-      throw new Error(this.reason);
+      throw this.reason;
     }
   }
 
