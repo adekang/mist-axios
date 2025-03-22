@@ -1,3 +1,5 @@
+import type CancelTokenClass from './cancel/CancelToken';
+
 export type Method =
   'get' | 'GET'
   | 'delete' | 'DELETE'
@@ -22,11 +24,19 @@ export interface AxiosRequestConfig {
 
   adapter?: 'xhr' | 'fetch' | 'http' | ((config: AxiosRequestConfig) => AxiosPromise)
 
-  cancelToken?: CancelToken
+  cancelToken?: CancelTokenClass
+  signal?: GenericAbortsignal
 
   validataStatus?: (status: number) => boolean
   // 参数序列化
   paramsSerializer?: (params: Params) => string
+}
+
+export interface GenericAbortsignal {
+  readonly aborted: boolean
+  onabort?: ((...args: any) => any) | null
+  addEventListener?: (...args: any) => any
+  removeEventListener?: (...args: any) => any
 }
 
 export interface AxiosResponse<T = any> {
@@ -155,9 +165,7 @@ export interface RejectedFn {
 export interface CancelToken {
   promise: Promise<Cancel>
   reason?: Cancel
-
   throwIfRequested: () => void
-
 }
 
 export interface CancelTokenStatic {
@@ -167,7 +175,7 @@ export interface CancelTokenStatic {
 }
 
 export interface Canceler {
-  (message: string,config:AxiosRequestConfig,request:XMLHttpRequest): void
+  (message: string, config: AxiosRequestConfig, request: XMLHttpRequest): void
 }
 
 export interface CancelExecutor {
@@ -185,4 +193,8 @@ export interface Cancel {
 
 export interface CancelStatic {
   new (message: string, config: AxiosRequestConfig, request: XMLHttpRequest): Cancel
+}
+
+export interface ResolvePromise {
+  (reason?: Cancel): void
 }

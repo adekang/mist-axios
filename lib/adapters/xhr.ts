@@ -1,4 +1,5 @@
-import type { AxiosPromise, AxiosRequestConfig, AxiosResponse } from '@/types';
+import type { AxiosPromise, AxiosRequestConfig, AxiosResponse, Cancel } from '@/types';
+import CancelError from '@/cancel/CancelError';
 import { createError, ErrorCodes } from '@/core/AxiosError';
 import { settle } from '@/core/settle';
 
@@ -11,9 +12,24 @@ const isXhrAdapterSupported = typeof XMLHttpRequest !== 'undefined';
  */
 export default isXhrAdapterSupported && function xhrAdapter(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
-    const { url, method = 'get', data = null, headers = {}, timeout, responseType, cancelToken } = config;
+    const { url, method = 'get', data = null, headers = {}, timeout, responseType, cancelToken, signal } = config;
 
     const request = new XMLHttpRequest();
+
+    const onCancel = (reason?: Cancel) => {
+      reject(reason ?? new CancelError('canceled', config, request));
+      request.abort();
+    };
+
+    const done = () => {
+      if (cancelToken) {
+        cancelToken.unsubscribe(onCancel);
+      }
+
+      if (signal) {
+        signal.removeEventListener?.('abort', onCancel);
+      }
+    };
     request.open(method.toUpperCase(), url!, true);
 
     request.onreadystatechange = function () {
@@ -34,7 +50,13 @@ export default isXhrAdapterSupported && function xhrAdapter(config: AxiosRequest
         request
       };
 
-      settle(resolve, reject, response);
+      settle(val => {
+        done();
+        resolve(val);
+      }, err => {
+        reject(err);
+        done();
+      }, response);
     };
 
     request.onerror = function handleError() {
@@ -53,11 +75,12 @@ export default isXhrAdapterSupported && function xhrAdapter(config: AxiosRequest
       request.timeout = timeout;
     }
 
-    if (cancelToken) {
-      cancelToken.promise.then(reason => {
-        request.abort();
-        reject(reason);
-      });
+    if (cancelToken || signal) {
+      cancelToken && cancelToken.subscribe(onCancel);
+
+      if (signal) {
+        signal?.aborted ? onCancel() : signal?.addEventListener?.('abort', onCancel);
+      }
     }
 
     request.send(data as any);
