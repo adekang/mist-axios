@@ -11,6 +11,8 @@ export default {
       Accept: 'application/json, text/plain, */*'
     }
   },
+  xsrfHeaderName: 'X-XSRF-TOKEN',
+  xsrfCookieName: 'XSRF-TOKEN',
   transformRequest: [
     (data, headers) => {
       processHeaders(headers, data);

@@ -1,7 +1,12 @@
+/* eslint-disable complexity */
 import type { AxiosPromise, AxiosRequestConfig, AxiosResponse, Cancel } from '@/types';
 import CancelError from '@/cancel/CancelError';
 import { createError, ErrorCodes } from '@/core/AxiosError';
 import { settle } from '@/core/settle';
+import cookie from '@/helpers/cookie';
+import { parseHeaders } from '@/helpers/headers';
+import { isFormData } from '@/helpers/is';
+import { isURLSameOrigin } from '@/helpers/url';
 
 const isXhrAdapterSupported = typeof XMLHttpRequest !== 'undefined';
 
@@ -12,7 +17,22 @@ const isXhrAdapterSupported = typeof XMLHttpRequest !== 'undefined';
  */
 export default isXhrAdapterSupported && function xhrAdapter(config: AxiosRequestConfig): AxiosPromise {
   return new Promise((resolve, reject) => {
-    const { url, method = 'get', data = null, headers = {}, timeout, responseType, cancelToken, signal } = config;
+    const {
+      url,
+      method = 'get',
+      data = null,
+      timeout,
+      headers,
+      responseType,
+      cancelToken,
+      signal,
+      withCredentials,
+      xsrfCookieName,
+      xsrfHeaderName,
+      auth,
+      onDownloadProgress,
+      onUploadProgress
+    } = config;
 
     const request = new XMLHttpRequest();
 
@@ -41,11 +61,13 @@ export default isXhrAdapterSupported && function xhrAdapter(config: AxiosRequest
         return;
       }
 
+      const responseHeaders = request.getAllResponseHeaders();
+
       const response: AxiosResponse = {
         data: request.response,
         status: request.status,
         statusText: request.statusText,
-        headers: headers ?? {},
+        headers: parseHeaders(responseHeaders),
         config,
         request
       };
@@ -67,6 +89,15 @@ export default isXhrAdapterSupported && function xhrAdapter(config: AxiosRequest
       reject(createError(`Timeout of ${timeout} ms exceeded`, ErrorCodes.ERR_TIMEOUT.value, config, request));
     };
 
+    if (onDownloadProgress) {
+      request.onprogress = onDownloadProgress;
+    }
+    if (onUploadProgress) {
+      request.upload.onprogress = onUploadProgress;
+    }
+
+    //  配置 request 开头
+
     if (responseType) {
       request.responseType = responseType;
     }
@@ -75,6 +106,13 @@ export default isXhrAdapterSupported && function xhrAdapter(config: AxiosRequest
       request.timeout = timeout;
     }
 
+    if (withCredentials) {
+      request.withCredentials = withCredentials;
+    }
+
+    // 配置 request 结束
+
+    // 处理 取消请求 开始
     if (cancelToken || signal) {
       cancelToken && cancelToken.subscribe(onCancel);
 
@@ -82,6 +120,35 @@ export default isXhrAdapterSupported && function xhrAdapter(config: AxiosRequest
         signal?.aborted ? onCancel() : signal?.addEventListener?.('abort', onCancel);
       }
     }
+    // 处理 取消请求 结束
+
+    // 处理 请求头 开始
+    if (isFormData(data)) {
+      delete headers!['Content-Type'];
+    }
+
+    if ((withCredentials || isURLSameOrigin(url!))) {
+      // xsrf
+      const xsrfVal = cookie.read(xsrfCookieName!);
+      if (xsrfVal && xsrfHeaderName) {
+        headers![xsrfHeaderName!] = xsrfVal;
+      }
+    }
+
+    if (auth) {
+      headers!.Authorization = `Basic ${btoa(`${auth.username}:${auth.password}`)}`;
+    }
+
+    Object.keys(headers!).forEach(name => {
+      if (data === null && name.toLowerCase() === 'content-type') {
+        delete headers![name];
+      }
+      else {
+        request.setRequestHeader(name, headers![name]);
+      }
+    });
+
+    // 处理 请求头 结束
 
     request.send(data as any);
   });

@@ -25,7 +25,16 @@ export interface AxiosRequestConfig {
   adapter?: 'xhr' | 'fetch' | 'http' | ((config: AxiosRequestConfig) => AxiosPromise)
 
   cancelToken?: CancelTokenClass
+
+  auth?: AxiosBasicCredentials
+
   signal?: GenericAbortsignal
+
+  // 跨域请求
+  withCredentials?: boolean
+
+  xsrfCookieName?: string
+  xsrfHeaderName?: string
 
   validataStatus?: (status: number) => boolean
   // 参数序列化
@@ -33,6 +42,11 @@ export interface AxiosRequestConfig {
 
   transformRequest?: AxiosTranformer | AxiosTranformer[]
   transformResponse?: AxiosTranformer | AxiosTranformer[]
+
+  onDownloadProgress?: (progressEvent: ProgressEvent) => void
+  onUploadProgress?: (progressEvent: ProgressEvent) => void
+
+  [propName: string]: any
 }
 
 export interface AxiosTranformer {
@@ -205,3 +219,9 @@ export interface CancelStatic {
 export interface ResolvePromise {
   (reason?: Cancel): void
 }
+
+export interface AxiosBasicCredentials {
+  username: string
+  password: string
+}
+

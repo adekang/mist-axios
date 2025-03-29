@@ -1,11 +1,11 @@
 import type { AxiosInstance, AxiosRequestConfig, AxiosStatic } from './types';
+import CancelError from './cancel/CancelError';
+import CancelToken from './cancel/CancelToken';
+import isCancel from './cancel/isCancel';
 import Axios from './core/Axios';
 import mergeConfig from './core/mergeConfig';
 import defaults from './defaults';
 import { extend } from './helpers';
-import CancelError from './cancel/CancelError';
-import CancelToken from './cancel/CancelToken';
-import isCancel from './cancel/isCancel';
 
 function createInstance(config: AxiosRequestConfig) {
   const context = new Axios(config);
@@ -42,7 +42,6 @@ axios.spread = function spread(callback) {
 axios.CancelError = CancelError;
 axios.CancelToken = CancelToken;
 axios.isCancel = isCancel;
-
 
 axios.Axios = Axios;
 
