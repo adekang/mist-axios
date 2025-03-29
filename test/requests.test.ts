@@ -123,19 +123,19 @@ describe('requests', () => {
   it('should return JSON when resolved', () => {
     server.use(
       rest.post('http://foo', (_, res, ctx) => {
-        return res(ctx.status(200), ctx.text('{"errno":0}'));
+        return res(ctx.status(200), ctx.json({"error":0}));
       })
     );
 
     axios.post('http://foo', {}, { headers: { Accept: 'application/json' } }).then(res => {
-      expect(res.data).toEqual({ errno: 0 });
+      expect(res.data).toEqual({ error: 0 });
     });
   });
 
   it('should supply correct response', () => {
     server.use(
       rest.post('http://foo', (_, res, ctx) => {
-        return res(ctx.status(200), ctx.text('{"foo": "bar"}'));
+        return res(ctx.status(200), ctx.json({ foo: 'bar' }));
       })
     );
 

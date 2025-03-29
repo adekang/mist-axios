@@ -1,6 +1,6 @@
 import type { AxiosRequestConfig } from './types';
 import { processHeaders } from './helpers/headers';
-import { transformRequest } from './helpers/transform';
+import { transformRequest, transformResponse } from './helpers/transform';
 
 export default {
   timeout: 0,
@@ -21,9 +21,8 @@ export default {
   ],
   transformResponse: [
     function (data) {
-      return transformRequest(data);
+      return transformResponse(data);
     }
-
   ],
   validataStatus: (status: number) => {
     return status >= 200 && status < 300;

@@ -9,7 +9,12 @@ export function transformData(this: AxiosRequestConfig, fns: AxiosTranformer[], 
 
   let data = context.data;
 
-  fns.forEach(fn => {
+  if (!fns || !Array.isArray(fns))
+    return data;
+  // 过滤掉非函数项
+  const validFns = fns.filter(fn => typeof fn === 'function');
+
+  validFns.forEach(fn => {
     data = fn.call(config, data, headers, response ? response.status : void 0);
   });
 

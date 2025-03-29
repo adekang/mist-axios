@@ -15,7 +15,9 @@ export default function dispatchRequest(config: AxiosRequestConfig): Promise<any
   throwIfCancellationRequested(config);
   processConfig(config);
   const adapter = adapters.getAdapter(config?.adapter || defaults.adapter);
-  return adapter(config).then((res: AxiosResponse) => transformResponseData(res));
+  return adapter(config).then((res: AxiosResponse) => {
+    return transformResponseData(res);
+  });
 }
 
 /**
@@ -24,6 +26,7 @@ export default function dispatchRequest(config: AxiosRequestConfig): Promise<any
  */
 function processConfig(config: AxiosRequestConfig): void {
   config.url = transformURL(config);
+
   config.data = transformData.call(config, isArray(config.transformRequest) ? config.transformRequest : [config.transformRequest!]);
   config.headers = flattenHeaders(config.headers, config.method!);
 }
@@ -47,8 +50,7 @@ function throwIfCancellationRequested(config: AxiosRequestConfig): void {
   }
 }
 
-function transformResponseData(res: AxiosRequestConfig) {
-  res.data = transformData.call(res, isArray(res.transformResponse) ? res.transformResponse : [res.transformResponse!]);
-
+function transformResponseData(res: AxiosResponse) {
+  res.data = transformData.call(res, isArray(res.config.transformResponse) ? res.config.transformResponse : [res.config.transformResponse!]);
   return res;
 }
