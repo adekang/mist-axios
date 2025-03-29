@@ -1,25 +1,47 @@
-class CancelToken {
-  constructor(executer) {
-    let resolvePromise;
+// function sum(...args) {
+//   let total = args.reduce((acc, curr) => acc + curr, 0);
+//   function innerSum(...args) {
+//     if (args.length === 0) {
+//       return total;
+//     }
 
-    this.promise = new Promise(resolve => {
-      resolvePromise = resolve;
-    });
+//     for (let i = 0; i < args.length; i++) {
+//       total += args[i];
+//     }
 
-    executer(message => {
-      console.log(message);
-      if (this.reason) {
-        return void 0;
-      }
+//     return innerSum;
+//   }
+//   return innerSum;
+// }
 
-      this.reason = message;
-      resolvePromise(message);
-    });
+// console.log(sum(1)(2)(3, 4)(4)());
+// console.log(sum(1)(2)(3, 4)(4)());
+
+function add(val) {
+  let tmp = 0;
+  if (val.length === 0) {
+    return tmp;
   }
+
+  for (let i = 0; i < val.length; i++) {
+    tmp += val[i];
+  }
+
+  return tmp;
 }
 
-let cancel;
-let p1 = new CancelToken(c => {
-  cancel = c;
-});
+function sum(...args) {
+  total = 0 + add(args);
+  function innerSum(...args) {
+    if (args.length === 0) {
+      return total;
+    }
+    total += add(args);
+    return innerSum;
+  }
+  return innerSum;
+}
 
+console.log(sum(1)(2)(3, 4)(4)());
+
+console.log(sum()(2)(3, 4)(4)());

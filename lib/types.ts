@@ -16,7 +16,7 @@ export interface AxiosRequestConfig {
   url?: string
   method?: Method
   data?: unknown
-  headers?: IHeaders | null
+  headers?: IHeaders | undefined | null
   params?: Params
   baseUrl?: string
   timeout?: number
@@ -30,6 +30,13 @@ export interface AxiosRequestConfig {
   validataStatus?: (status: number) => boolean
   // 参数序列化
   paramsSerializer?: (params: Params) => string
+
+  transformRequest?: AxiosTranformer | AxiosTranformer[]
+  transformResponse?: AxiosTranformer | AxiosTranformer[]
+}
+
+export interface AxiosTranformer {
+  (this: AxiosRequestConfig, data: unknown, headers?: IHeaders | undefined | null, status?: number): unknown
 }
 
 export interface GenericAbortsignal {

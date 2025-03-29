@@ -1,8 +1,10 @@
-import type { AxiosRequestConfig } from '../types';
+import type { AxiosRequestConfig, AxiosResponse } from '../types';
 import adapters from '@/adapters';
 import defaults from '@/defaults';
 import { flattenHeaders } from '@/helpers/headers';
+import { isArray } from '@/helpers/is';
 import { buildURL, combineURL, isAbsoluteURL } from '@/helpers/url';
+import { transformData } from './transformData';
 
 /**
  *  发送请求
@@ -13,7 +15,7 @@ export default function dispatchRequest(config: AxiosRequestConfig): Promise<any
   throwIfCancellationRequested(config);
   processConfig(config);
   const adapter = adapters.getAdapter(config?.adapter || defaults.adapter);
-  return adapter(config);
+  return adapter(config).then((res: AxiosResponse) => transformResponseData(res));
 }
 
 /**
@@ -22,6 +24,7 @@ export default function dispatchRequest(config: AxiosRequestConfig): Promise<any
  */
 function processConfig(config: AxiosRequestConfig): void {
   config.url = transformURL(config);
+  config.data = transformData.call(config, isArray(config.transformRequest) ? config.transformRequest : [config.transformRequest!]);
   config.headers = flattenHeaders(config.headers, config.method!);
 }
 
@@ -42,4 +45,10 @@ function throwIfCancellationRequested(config: AxiosRequestConfig): void {
   if (config.cancelToken) {
     config.cancelToken.throwIfRequested();
   }
+}
+
+function transformResponseData(res: AxiosRequestConfig) {
+  res.data = transformData.call(res, isArray(res.transformResponse) ? res.transformResponse : [res.transformResponse!]);
+
+  return res;
 }
